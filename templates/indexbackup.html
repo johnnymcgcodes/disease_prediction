@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../static/myscripts.js"></script>
+</head>
+<body>
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+Index
+{% endblock %}
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{url_for('.static', filename='main.css')}}">
+{% endblock %}
+
+{% block content %}
+    <div class="jumbotron text-center">
+    <h1>Diabetes Predictor</h1>
+        <h2>WARNING!</h2>
+        <h3>This app is not intended to be used for professional medical advice. It is solely an educational exercise.</h3>
+    <p>This app makes pre-diabetes risk classification with a variety of features such as diet and exercise. It utilized a logistic regression machine learning model.
+    <br>
+        Please select the inputs below, then click the PREDICT button at the button of screen to view results and charts on next page.
+    </p>
+    </div>
+    <div><h2><p>{{ pred_text }}</p></h2></div>
+
+    <form action="{{ url_for('classify')}}"method="post">
+    <div class="flex-container">
+        <section class="flex2">
+            <label for="HighBP">High Blood pressure?</label>
+            <input type="hidden" id="HighBPID" name="HighBP" value="0"/>
+            <input id = "HighBP" type="checkbox" value="1" name="HighBP"   onchange="showCheckVal(id, name)"/>
+            <span id="HighBPVal"></span>
+        </section>
+        <section class="flex2">
+            <label for="HighChol">High Cholesterol?</label>
+            <input type="hidden" id="HighCholID" name="HighChol" value="0"/>
+            <input id = "HighChol" type="checkbox" value="1"  name="HighChol"  onchange="showCheckVal(id, name)"/>
+            <span id="HighCholVal"></span>
+        </section>
+           <section class="flex2">
+            <label for="CholCheck">Cholesterol checked in 5 years</label>
+            <input type="hidden" id="CholCheckID" name="CholCheck" value="0"/>
+{#               oninput="showCheckVal(id, name)" #}
+            <input id = "CholCheck" type="checkbox" value="1"  name="CholCheck"  onchange="showCheckVal(id, name)"/>
+            <span id="CholCheckVal"></span>
+        </section>
+        <section class="flex2">
+            <label for="BMI">BMI Range</label>
+            <input type="range" min="10" max="60" value="10" name="BMI" required="required" oninput="showRangeVal(this.value, this.name)" onchange="showRangeVal(this.value, this.name)"/>
+            <span id="BMIVal"></span>
+        </section>
+        <section class="flex2">
+            <label for="Smoker">Smoker</label>
+            <input type="hidden" id="SmokerID" name="Smoker" value="0"/>
+            <input id="Smoker" type="checkbox" value="1" name="Smoker"  onchange="showCheckVal(id, name)"/>
+        <span id="SmokerVal"></span>
+        </section>
+        <section class="flex2">
+            <label for="Stroke">Stroke</label>
+            <input type="hidden" id="StrokeID" name="Stroke" value="0"/>
+            <input id ="Stroke" type="checkbox" value="1"  name="Stroke" oninput="showCheckedVal(id, name)"/>
+        <span id="StrokeVal"></span>
+        </section>
+        <section class="flex2">
+            <label for="HeartDiseaseorAttack">Any past Heart Disease</label>
+            <input type="hidden" id="HeartDiseaseorAttackID" name="HeartDiseaseorAttack" value="0"/>
+            <input id="HeartDiseaseorAttack" type="checkbox" value="1"  name="HeartDiseaseorAttack"  oninput="showCheckedVal(id, name)"/>
+        <span id="HeartDiseaseorAttackVal"></span>
+        </section>
+        <section class="flex2">
+            <label for="PhysActivity">Exercise at least once a week?</label>
+            <input type="hidden" id="PhysActivityID" name="PhysActivity" value="0"/>
+            <input id="PhysActivity" type="checkbox" value="1" name="PhysActivity" oninput="showCheckedVal(id, name)"/>
+        <span id="PhysActivityVal"></span>
+        </section>
+        <section class="flex2">
+            <label for="Fruits">Eat Fruits at least once a week</label>
+            <input type="hidden" id="FruitsID" name="Fruits" value="0"/>
+            <input id="Fruits" type="checkbox" value="1" name="Fruits"  oninput="showCheckedVal(id, name)"/>
+        <span id="FruitsVal"></span>
+        </section>
+        <section class="flex2">
+            <label for="Veggies">Eat Veggies at least once a week</label>
+            <input type="hidden" id="VeggiesID" name="Veggies" value="0"/>
+            <input id="Veggies" type="checkbox" value="1" name="Veggies"   oninput="showCheckedVal(id, name)"/>
+        <span id="VeggiesVal"></span>
+        </section>
+        <section class="flex2">
+            <label for="HvyAlcoholConsump">Heavy Alcohol Consumption?</label>
+            <input type="hidden" id="HvyAlcoholConsumpID" name="HvyAlcoholConsump" value="0"/>
+            <input id="HvyAlcoholConsump" type="checkbox" value="1"  name="HvyAlcoholConsump" oninput="showCheckedVal(id, name)"/>
+        <span id="HvyAlcoholConsumpVal"></span>
+        </section>
+        <section class="flex2">
+            <label for="AnyHealthcare">AnyHealthcare</label>
+            <input type="hidden" id="AnyHealthcareID" name="AnyHealthcare" value="0"/>
+            <input id="AnyHealthcare" type="checkbox" value="1" name="AnyHealthcare" oninput="showCheckedVal(id, name)"/>
+        <span id="AnyHealthcareVal"></span>
+            </section>
+        <section class="flex2">
+            <label for="NoDoctor">No doctor due to high cost</label>
+            <input type="hidden" id="NoDoctorID" name="NoDoctor" value="0"/>
+            <input id="NoDoctor" type="checkbox" value="1" name="NoDoctor"  oninput="showCheckedVal(id, name)"/>
+        <span id="NoDoctorVal"></span>
+        </section>
+            <section class="flex2">
+            <label for="GenHlth">Overall health(1-->
+                excellent,
+                3-->average,
+                5-->poor.</label>
+            <input type="range" min="1" max="5" value="1" name="GenHlth" required="required" oninput="showRangeVal(this.value, this.name)" onchange="showRangeVal(this.value, this.name)"/>
+            <span id="GenHlthVal">1</span>
+            </section>
+            <section class="flex2">
+            <label for="MentHlth">Total Mentally Challenging days each month, from 0 to 30</label>
+            <input type="range" min="0" max="30" value="0" name="MentHlth"  required="required" oninput="showRangeVal(this.value, this.name)" onchange="showRangeVal(this.value, this.name)"/>
+            <span id="MentHlthVal">0</span>
+            </section>
+            <section class="flex2">
+            <label for="PhysHlth">Total Physically Challenging days each month, from 0 to 30</label>
+            <input type="range" min="0" max="30" value="0" name="PhysHlth" required="required" oninput="showRangeVal(this.value, this.name)" onchange="showRangeVal(this.value, this.name)"/>
+            <span id="PhysHlthVal">0</span>
+        </section>
+        <section class="flex2">
+            <label for="DiffWalk">Difficulty Walking?</label>
+            <input type="hidden" id="DiffWalkID" name="DiffWalk" value="0"/>
+            <input id="DiffWalk" name="DiffWalk" type="checkbox" value="1"   onchange="showCheckVal(id, name)"/>
+            <span id="DiffWalkVal"></span>
+        </section>
+        <section class="flex2">
+            <label for="Female">Female</label>
+            <input type="radio" id = "Female "name="Sex" value="0" checked/>
+            <label for="male">Male</label>
+            <input type="radio" id = "male "name="Sex" value="1"/>
+        </section>
+        <section class="flex2">
+            <label for="Age">Age range from 18 to 88</label>
+{#            <input type="text" name="Age" placeholder="Age..." required="required" />#}
+
+            <input type="range" min="1" max="9" value="1" name="Age" required="required" oninput="showAlteredRangeVal(this.value, this.name)" onchange="showAlteredRangeVal(this.value, this.name)"/>
+            <span id="AgeVal">18</span>
+        </section>
+        <div class="flex-container">
+        <section class="flex2">
+        <span id="EducationSpan">Education: </span>
+{#            <label for="Education">Education</label>#}
+{#            <input type="text" name="Education" placeholder="Education..." required="required" />#}
+           <section class="flex2">
+            <label for="noschool">Never attended school</label>
+        <input type="radio" id="noschool" name="Education" value="1"/>
+               </section>
+              <section class="flex2">
+        <label for="gradeschool">Finished grade school</label>
+        <input type="radio" id="grade" name="Education" value="2"/>
+            </section>
+          <section class="flex2">
+        <label for="starthighschool">Started high school</label>
+        <input type="radio" id="starthighschool" name="Education" value="3"/>
+        </section>
+          <section class="flex2">
+        <label for="Finished High School">Graduated high school</label>
+        <input type="radio" id="highschool" name="Education" value="4" checked/>
+        </section>
+          <section class="flex2">
+        <label for="SomeCollege">Attended college, but did not finish.</label>
+        <input type="radio" id="SomeCollege" name="Education" value="5"/>
+        </section>
+          <section class="flex2">
+        <label for="GraduatedCollege">Graduated college</label>
+        <input type="radio" id="GraduatedCollege" name="Education" value="6"/>
+</section>
+        </section>
+        <section class="flex2">
+{#            <label for="Income">Income</label>#}
+{#            <input type="text" name="Income" placeholder="Income..." required="required" />#}
+            <span id="IncomeSpan">Annual Income: </span>
+            <section class="flex2">
+                <label for="less10">Income under 10,000</label>
+                <input type="radio" id="less10" name="Income" value="1"/>
+            </section>
+                        <section class="flex2">
+                <label for="ten">Between 10,000 and less than 20,000</label>
+                <input type="radio" id="ten" name="Income" value="2"/>
+            </section>
+                        <section class="flex2">
+                <label for="twenty">Between 20,000 and less than 30,000</label>
+                <input type="radio" id="twenty" name="Income" value="3" checked/>
+            </section>
+                        <section class="flex2">
+                <label for="thirty">Between 30,000 and less than 40,000</label>
+                <input type="radio" id="thirty" name="Income" value="4"/>
+            </section>
+                        <section class="flex2">
+                <label for="forty">Between 40,000 and less than 50,000</label>
+                <input type="radio" id="forty" name="Income" value="5"/>
+            </section>
+            <section class="flex2">
+                <label for="fifty">Between 50,000 and less than 60,000</label>
+                <input type="radio" id="fifty" name="Income" value="6"/>
+            </section>
+            <section class="flex2">
+                <label for="sixty">Between 60,000 and less than 75,000</label>
+                <input type="radio" id="sixty" name="Income" value="7"/>
+            </section>
+            <section class="flex2">
+                <label for="greater75">75,000 or more</label>
+                <input type="radio" id="greater75" name="Income" value="8"/>
+            </section>
+
+        </section>
+        </div>
+    </div>
+        <br>
+        <button type="submit" class="btn btn-primary btn-block btn-large">Predict</button>
+    </form>
+    <div>
+{#    <p>{{ pred_text }}</p>#}
+        <img src="{{ graph1 }}"/>
+    </div>
+{% endblock %}
+
+{#{% block result %}#}
+{#    <br>#}
+{#    <p>"here</p>#}
+{#    <p>{{ pred_text }}</p>#}
+{#{% endblock %}#}
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Results</title>
+      <script src="../static/myscripts.js"></script>
+</head>
+<body>
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+Index
+{% endblock %}
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{url_for('.static', filename='main.css')}}">
+{% endblock %}
+
+{% block content %}
+ <h2>WARNING!</h2>
+    <h3>This app is not intended to be used for professional medical advice. It is solely an educational exercise.</h3>
+
+
+    <div>
+        <h2>
+            <p>{{ pred_text }}
+            </p>
+        </h2>
+        <p>Scroll down to view charts. Click submit to restart program.</p>
+        <form action="{{ url_for('submit')}}">
+            <button type="submit" class="btn btn-primary btn-block btn-large">Resubmit</button>
+            </form>
+
+    </div>
+    <div>
+    <img src="{{ url_for('serve_image_pie')}}">
+    <img src="{{ url_for('serve_image_feature')}}">
+<img src="{{ url_for('serve_image_scatter')}}">
+    <img src="{{ url_for('serve_image_roc')}}">
+    </div>
+{% endblock %}
+
+
+</body>
+</html>
